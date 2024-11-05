@@ -64,6 +64,12 @@ def parse(tokens):
         nonlocal operations
         nonlocal counter
         # Parsing operators
+        """print(len(tokens))
+        if tokens[-1][0] != 'SEMI':
+            
+            print(f"Missing semicolon at the end of your statement")
+            sys.exit(1)"""
+        
         if (tokens[index][0] == 'COUT' and tokens[index + 1][0] == 'SHR' and
         tokens[index + 2][0] == 'IDENT' and tokens[index + 3][0] == 'OP' and
         tokens[index + 4][0] == 'IDENT' and tokens[index + 5][0] == 'SEMI'):
@@ -147,10 +153,14 @@ def parse(tokens):
 
         
             
-        if tokens[index][0] == 'IDENT' and tokens[index + 1][0] == 'ASSIGN' and tokens[index + 2][0] in ('NUMBER', 'IDENT') and tokens[index + 3][0] == 'SEMI':
+        if tokens[index][0] == 'IDENT' and tokens[index + 1][0] == 'ASSIGN' and tokens[index + 2][0] in ('NUMBER', 'IDENT'):
             #print(f"Assignment detected: {tokens[index]} = {tokens[index + 2]}")
-            counter += 1
-            return ASTNode('ASSIGN', [tokens[index], tokens[index + 2]]), index + 4
+            if tokens[index + 3][0] == 'SEMI':
+                counter += 1
+                return ASTNode('ASSIGN', [tokens[index], tokens[index + 2]]), index + 4
+            else:
+                print(f"Error! Perhaps Missing Semi-Colon at line {counter+1}")
+                sys.exit(1) 
         #print(f"This should be it: {tokens[index][0]} {tokens[index+1][0]} {tokens[index + 2][0]} {tokens[index + 3][0]}")
         if tokens[index][0] == 'IDENT' and tokens[index + 1][0] == 'OP' and tokens[index + 2][0] == 'NUMBER' and tokens[index + 3][0] == 'SEMI':
             testdeclaredvariables = tokens[index][1]
@@ -166,14 +176,20 @@ def parse(tokens):
 
             counter += 1
             return ASTNode('ASSIGN', [tokens[index], tokens[index + 2]]), index + 4
-        print(f"Declared Variables {declaredvariables}")
-        print(f"Values : {iterations}")
+        #print(f"Declared Variables {declaredvariables}")
+        #print(f"Values : {iterations}")
             
 
 
         # Parsing arithmetic assignment: IDENT = IDENT OP IDENT; or IDENT = NUMBER OP NUMBER;
         if tokens[index][0] == 'IDENT' and tokens[index + 1][0] == 'ASSIGN' and tokens[index + 2][0] in ('NUMBER', 'IDENT'):
-            if tokens[index + 3][0] == 'OP' and tokens[index + 4][0] in ('NUMBER', 'IDENT') and tokens[index + 5][0] == 'SEMI':
+            if tokens[index + 3][0] == 'OP' and tokens[index + 4][0] in ('NUMBER', 'IDENT'):
+                if tokens[index + 5][0] == 'SEMI':
+                    counter += 1
+                    return ASTNode('ASSIGN', [tokens[index], tokens[index + 2]]), index + 4
+                else:
+                    print(f"Error! Perhaps Missing Semi-Colon at line {counter+1}")
+                    sys.exit(1)
                 counter += 1
                 return ASTNode('ASSIGN_OP', [tokens[index], tokens[index + 2], tokens[index + 3], tokens[index + 4]]), index + 6
 
@@ -480,28 +496,28 @@ if __name__ == "__main__":
     # Step 1: Read C++ code from file
     cpp_filename = "temp_code.cpp" # Change this to your C++ file name
     cpp_code = read_cpp_file(cpp_filename)
-    print(f"Read C++ code from {cpp_filename}:\n{cpp_code}")
+    #print(f"Read C++ code from {cpp_filename}:\n{cpp_code}")
 
     # Step 2: Tokenize
     tokens = tokenize(cpp_code)
-    print(f"Tokens: {tokens}")
+    #print(f"Tokens: {tokens}")
 
     # Step 3: Parse to AST
 
     ast,variable1,iterations,declaredvariables, operations  = parse(tokens)
-    print(f"Latest Variable1 {variable1}")
-    print(f"AST: {[node.node_type for node in ast]}")
+    #print(f"Latest Variable1 {variable1}")
+    #print(f"AST: {[node.node_type for node in ast]}")
 
     # Step 4: Generate Intermediate Representation (IR)
     ir_code,variable1,iterations,declaredvariables, operations  = generate_ir(ast,variable1,iterations,declaredvariables, operations )
-    print(f"IR: {ir_code}")
-    print(f"Latest Variable1 {variable1}")
+    #print(f"IR: {ir_code}")
+    #print(f"Latest Variable1 {variable1}")
     # Step 5: Generate Assembly Code
     assembly_code = generate_assembly(ir_code,variable1,iterations,declaredvariables, operations)
-    print("Assembly Code:")
+    """print("Assembly Code:")
     for line in assembly_code:
         print(line)
-
+"""
     # Step 6: Write assembly code to .asm file
     output_asm_filename = "output.asm"
     write_asm_file(output_asm_filename, assembly_code)

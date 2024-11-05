@@ -188,5 +188,23 @@ input_entry.pack(fill=tk.X, padx=10, pady=(5, 10))
 # Start with the default theme
 apply_theme("Light Mode")
 
+
+# Function to open DOSBox
+def open_dosbox():
+    dosbox_path = "C:/Program Files (x86)/DOSBox-0.74-3/DOSBox.exe"  # Adjust this path if necessary
+    try:
+        subprocess.Popen([dosbox_path])
+        console_log.configure(state="normal")
+        console_log.insert(tk.END, "DOSBox 0.74-3 launched.\n")
+        console_log.configure(state="disabled")
+    except FileNotFoundError:
+        messagebox.showerror("Error", "DOSBox not found. Please check the file path.")
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to launch DOSBox: {e}")
+
+# Add the DOSBox button to the button frame
+dosbox_button = tk.Button(button_frame, text="Open DOSBox", command=open_dosbox, font=("Arial", 10))
+dosbox_button.pack(side=tk.LEFT, padx=5)
+
 # Start the application
 root.mainloop()

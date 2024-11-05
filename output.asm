@@ -11,14 +11,6 @@ mov dx,0000
   LEA DX,[msgn1]
   mov ah,0x09
   int 0x21
-  LEA DX,[msgn1]
-  mov ah,0x09
-  int 0x21
-  LEA DX,[msgn1]
-  mov ah,0x09
-  int 0x21
   int 0x20
 section .data
-msgn1: db 0x0A, 0x0D, "Hello World $"
-msgn2: db 0x0A, 0x0D, "Hello World $"
-msgn3: db 0x0A, 0x0D, "Hello World $"
+msgn1: db 0x0A, 0x0D, "17.5 $"
